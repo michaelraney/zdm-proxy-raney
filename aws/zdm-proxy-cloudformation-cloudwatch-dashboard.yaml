@@ -1,0 +1,312 @@
+# This CloudFormation template creates a CloudWatch dashboard for ZDM Proxy metrics.
+# It includes widgets for various metrics such as latencies, origin requests, target requests.
+
+Parameters:
+  CloudwatchDashBoardNameParameter:
+    Type: String
+    Default: ProxyCloudwatchDashboard
+    Description: The name of your Amazon CloudWatch Dashboard for your Proxy's metrics
+  ProxyCloudwatchNamespace:
+      Type: String
+      Default: ZDMProxy
+      Description: The namespace where your Proxy's metrics are published. 
+  ProxyCloudwatchMetricPrefix:
+      Type: String
+      Default: zdm
+      Description: The prefix your Proxy's metrics are published with. 
+Resources:
+   CWD725Q:
+      Type: AWS::CloudWatch::Dashboard
+      Properties:
+        DashboardName:
+          Ref: CloudwatchDashBoardNameParameter
+        DashboardBody:
+          !Sub
+          '{
+    "widgets": [
+        {
+            "height": 6,
+            "width": 6,
+            "y": 6,
+            "x": 12,
+            "type": "metric",
+            "properties": {
+                "metrics": [
+                    [ { "expression": "SEARCH(\u0027{${ProxyCloudwatchNamespace},error,node} MetricName=\"${ProxyCloudwatchMetricPrefix}_origin_requests_failed_total\"\u0027, \u0027Sum\u0027, 300)", "label": "[node: \u0024{PROP(\u0027Dim.node\u0027)}] [error: \u0024{PROP(\u0027Dim.error\u0027)}]", "id": "e4", "period": 300, "region": "${AWS::Region}" } ]
+                ],
+                "view": "timeSeries",
+                "stacked": false,
+                "region": "${AWS::Region}",
+                "stat": "Sum",
+                "period": 300,
+                "title": "Origin failures",
+                "yAxis": {
+                    "left": {
+                        "showUnits": false
+                    }
+                }
+            }
+        },
+        {
+            "height": 6,
+            "width": 6,
+            "y": 6,
+            "x": 6,
+            "type": "metric",
+            "properties": {
+                "metrics": [
+                    [ { "expression": "SEARCH(\u0027{${ProxyCloudwatchNamespace},node,type} MetricName=\"${ProxyCloudwatchMetricPrefix}_origin_request_duration_seconds\"\u0027, \u0027Average\u0027, 300)", "label": "[node: \u0024{PROP(\u0027Dim.node\u0027)}] [type: \u0024{PROP(\u0027Dim.type\u0027)}]", "id": "e4", "period": 300, "region": "${AWS::Region}" } ]
+                ],
+                "view": "timeSeries",
+                "stacked": false,
+                "region": "${AWS::Region}",
+                "stat": "Sum",
+                "period": 300,
+                "title": "Origin latencies",
+                "yAxis": {
+                    "left": {
+                        "showUnits": false,
+                        "label": "seconds"
+                    }
+                }
+            }
+        },
+        {
+            "height": 6,
+            "width": 6,
+            "y": 12,
+            "x": 12,
+            "type": "metric",
+            "properties": {
+                "metrics": [
+                    [ { "expression": "SEARCH(\u0027{${ProxyCloudwatchNamespace},error,node} MetricName=\"${ProxyCloudwatchMetricPrefix}_target_requests_failed_total\"\u0027, \u0027Sum\u0027, 300)", "label": "[node: \u0024{PROP(\u0027Dim.node\u0027)}] [error: \u0024{PROP(\u0027Dim.error\u0027)}]", "id": "e4", "period": 300, "region": "${AWS::Region}" } ]
+                ],
+                "view": "timeSeries",
+                "stacked": false,
+                "region": "${AWS::Region}",
+                "stat": "Sum",
+                "period": 300,
+                "title": "Target failures",
+                "yAxis": {
+                    "left": {
+                        "showUnits": false
+                    }
+                }
+            }
+        },
+        {
+            "height": 6,
+            "width": 6,
+            "y": 12,
+            "x": 6,
+            "type": "metric",
+            "properties": {
+                "metrics": [
+                    [ { "expression": "SEARCH(\u0027{${ProxyCloudwatchNamespace},node,type} MetricName=\"${ProxyCloudwatchMetricPrefix}_target_request_duration_seconds\"\u0027, \u0027Average\u0027, 300)", "label": "[node: \u0024{PROP(\u0027Dim.node\u0027)}] [type: \u0024{PROP(\u0027Dim.type\u0027)}]", "id": "e4", "period": 300, "region": "${AWS::Region}" } ]
+                ],
+                "view": "timeSeries",
+                "stacked": false,
+                "region": "${AWS::Region}",
+                "stat": "Sum",
+                "period": 300,
+                "title": "Target latencies",
+                "yAxis": {
+                    "left": {
+                        "label": "seconds",
+                        "showUnits": false
+                    }
+                }
+            }
+        },
+        {
+            "height": 6,
+            "width": 6,
+            "y": 6,
+            "x": 18,
+            "type": "metric",
+            "properties": {
+                "metrics": [
+                    [ { "expression": "SEARCH(\u0027{${ProxyCloudwatchNamespace},node} MetricName=\"${ProxyCloudwatchMetricPrefix}_origin_connections_total\"\u0027, \u0027Sum\u0027, 300)", "label": "[node: \u0024{PROP(\u0027Dim.node\u0027)}]", "id": "e4", "period": 300, "region": "${AWS::Region}" } ]
+                ],
+                "view": "timeSeries",
+                "stacked": false,
+                "region": "${AWS::Region}",
+                "stat": "Sum",
+                "period": 300,
+                "title": "Origin connections",
+                "yAxis": {
+                    "left": {
+                        "showUnits": false
+                    }
+                }
+            }
+        },
+        {
+            "height": 6,
+            "width": 6,
+            "y": 12,
+            "x": 0,
+            "type": "metric",
+            "properties": {
+                "metrics": [
+                    [ { "expression": "SEARCH(\u0027{${ProxyCloudwatchNamespace},node} MetricName=\"${ProxyCloudwatchMetricPrefix}_target_used_stream_ids_total\"\u0027, \u0027Sum\u0027, 300)", "label": "[node: \u0024{PROP(\u0027Dim.node\u0027)}]", "id": "e4", "period": 300, "region": "${AWS::Region}" } ]
+                ],
+                "view": "timeSeries",
+                "stacked": false,
+                "region": "${AWS::Region}",
+                "stat": "Sum",
+                "period": 300,
+                "title": "Target connection stream ids",
+                "yAxis": {
+                    "left": {
+                        "showUnits": false
+                    }
+                }
+            }
+        },
+        {
+            "height": 6,
+            "width": 6,
+            "y": 6,
+            "x": 0,
+            "type": "metric",
+            "properties": {
+                "metrics": [
+                    [ { "expression": "SEARCH(\u0027{${ProxyCloudwatchNamespace},node} MetricName=\"${ProxyCloudwatchMetricPrefix}_origin_used_stream_ids_total\"\u0027, \u0027Sum\u0027, 300)", "label": "[node: \u0024{PROP(\u0027Dim.node\u0027)}]", "id": "e4", "period": 300, "region": "${AWS::Region}" } ]
+                ],
+                "view": "timeSeries",
+                "stacked": false,
+                "region": "${AWS::Region}",
+                "stat": "Sum",
+                "period": 300,
+                "title": "Origin connection stream ids",
+                "yAxis": {
+                    "left": {
+                        "showUnits": false
+                    }
+                }
+            }
+        },
+        {
+            "height": 6,
+            "width": 6,
+            "y": 0,
+            "x": 0,
+            "type": "metric",
+            "properties": {
+                "metrics": [
+                    [ { "expression": "SEARCH(\u0027{${ProxyCloudwatchNamespace},type} MetricName=\"${ProxyCloudwatchMetricPrefix}_proxy_inflight_requests_total\"\u0027, \u0027Sum\u0027, 300)", "label": "[type: \u0024{PROP(\u0027Dim.type\u0027)}]", "id": "e4", "period": 300, "region": "${AWS::Region}" } ]
+                ],
+                "view": "timeSeries",
+                "stacked": false,
+                "region": "${AWS::Region}",
+                "stat": "Sum",
+                "period": 300,
+                "title": "Concurrent Proxy operations",
+                "yAxis": {
+                    "left": {
+                        "showUnits": false,
+                        "label": ""
+                    },
+                    "right": {
+                        "showUnits": true
+                    }
+                }
+            }
+        },
+        {
+            "height": 6,
+            "width": 6,
+            "y": 0,
+            "x": 18,
+            "type": "metric",
+            "properties": {
+                "metrics": [
+                    [ { "expression": "SEARCH(\u0027{${ProxyCloudwatchNamespace},cluster} MetricName=\"${ProxyCloudwatchMetricPrefix}_proxy_failed_connections_total\"\u0027, \u0027Sum\u0027, 300)", "label": "[cluster: \u0024{PROP(\u0027Dim.cluster\u0027)}]", "id": "e4", "period": 300, "region": "${AWS::Region}" } ]
+                ],
+                "view": "timeSeries",
+                "stacked": false,
+                "region": "${AWS::Region}",
+                "stat": "Sum",
+                "period": 300,
+                "title": "Proxy failed connections",
+                "yAxis": {
+                    "left": {
+                        "showUnits": false
+                    }
+                }
+            }
+        },
+        {
+            "height": 6,
+            "width": 6,
+            "y": 0,
+            "x": 12,
+            "type": "metric",
+            "properties": {
+                "metrics": [
+                    [ { "expression": "SEARCH(\u0027{${ProxyCloudwatchNamespace},failed_on} MetricName=\"${ProxyCloudwatchMetricPrefix}_proxy_failed_writes_total\"\u0027, \u0027Sum\u0027, 300)", "label": "[failed_on: \u0024{PROP(\u0027Dim.failed_on\u0027)}]", "id": "e4", "period": 300, "region": "${AWS::Region}" } ],
+                    [ "${ProxyCloudwatchNamespace}", "${ProxyCloudwatchMetricPrefix}_pscache_miss_total", { "period": 300, "id": "m1", "region": "${AWS::Region}" } ]
+                ],
+                "view": "timeSeries",
+                "stacked": false,
+                "region": "${AWS::Region}",
+                "stat": "Sum",
+                "period": 300,
+                "title": "Proxy failed operations",
+                "yAxis": {
+                    "left": {
+                        "showUnits": false
+                    }
+                }
+            }
+        },
+        {
+            "height": 6,
+            "width": 6,
+            "y": 12,
+            "x": 18,
+            "type": "metric",
+            "properties": {
+                "metrics": [
+                    [ { "expression": "SEARCH(\u0027{${ProxyCloudwatchNamespace},node} MetricName=\"${ProxyCloudwatchMetricPrefix}_target_connections_total\"\u0027, \u0027Sum\u0027, 300)", "label": "[node: \u0024{PROP(\u0027Dim.node\u0027)}]", "id": "e4", "period": 300, "region": "${AWS::Region}" } ]
+                ],
+                "view": "timeSeries",
+                "stacked": false,
+                "region": "${AWS::Region}",
+                "stat": "Sum",
+                "period": 300,
+                "title": "Target connections",
+                "yAxis": {
+                    "left": {
+                        "showUnits": false
+                    }
+                }
+            }
+        },
+        {
+            "height": 6,
+            "width": 6,
+            "y": 0,
+            "x": 6,
+            "type": "metric",
+            "properties": {
+                "metrics": [
+                    [ { "expression": "SEARCH(\u0027{${ProxyCloudwatchNamespace},node,type} MetricName=\"${ProxyCloudwatchMetricPrefix}_async_request_duration_seconds\"\u0027, \u0027Average\u0027, 300)", "label": "[node: \u0024{PROP(\u0027Dim.node\u0027)}] [type: \u0024{PROP(\u0027Dim.type\u0027)}]", "id": "e4", "period": 300, "region": "${AWS::Region}" } ]
+                ],
+                "view": "timeSeries",
+                "stacked": false,
+                "region": "${AWS::Region}",
+                "stat": "Sum",
+                "period": 300,
+                "title": "Async request latencies",
+                "yAxis": {
+                    "left": {
+                        "showUnits": false,
+                        "label": "seconds"
+                    }
+                }
+            }
+        }
+    ]
+}'

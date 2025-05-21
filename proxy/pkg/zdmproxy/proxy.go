@@ -8,6 +8,7 @@ import (
 	"github.com/datastax/zdm-proxy/proxy/pkg/common"
 	"github.com/datastax/zdm-proxy/proxy/pkg/config"
 	"github.com/datastax/zdm-proxy/proxy/pkg/metrics"
+	"github.com/datastax/zdm-proxy/proxy/pkg/metrics/amazoncloudwatchmetrics"
 	"github.com/datastax/zdm-proxy/proxy/pkg/metrics/noopmetrics"
 	"github.com/datastax/zdm-proxy/proxy/pkg/metrics/prommetrics"
 	"github.com/jpillora/backoff"
@@ -278,15 +279,31 @@ func (p *ZdmProxy) initializeMetricHandler() error {
 	p.lock.Lock()
 	defer p.lock.Unlock()
 
-	// This is the Prometheus-specific implementation of the MetricFactory object that will be provided to the global MetricHandler object
-	// To switch to a different implementation, change the type instantiated here to another one that implements
-	// metrics.MetricFactory.
-	// You will also need to change the HTTP handler, see runner.go.
-
 	var metricFactory metrics.MetricFactory
 	if p.Conf.MetricsEnabled {
-		metricFactory = prommetrics.NewPrometheusMetricFactory(prometheus.DefaultRegisterer, p.Conf.MetricsPrefix)
+		switch p.Conf.MetricsType {
+		case "prometheus":
+			log.Info("Prometheus metrics initialized")
+			metricFactory = prommetrics.NewPrometheusMetricFactory(prometheus.DefaultRegisterer, p.Conf.MetricsPrefix)
+		case "amazoncloudwatch":
+
+			cwFactory, err := amazoncloudwatchmetrics.NewCloudWatchMetricFactory(
+				p.Conf.AmazonCloudwatchRegion,
+				p.Conf.AmazonCloudwatchNamespace,
+				p.Conf.MetricsPrefix,
+				p.Conf.AmazonCloudwatchReportIntervalMinutes,
+			)
+			if err != nil {
+				return fmt.Errorf("failed to initialize Amazon CloudWatch metrics: %w", err)
+			} else {
+				log.Info("Amazon CloudWatch metrics initialized")
+			}
+			metricFactory = cwFactory
+		default:
+			return fmt.Errorf("unsupported metrics type: %s", p.Conf.MetricsType)
+		}
 	} else {
+		log.Info("metrics disabled")
 		metricFactory = noopmetrics.NewNoopMetricFactory()
 	}
 

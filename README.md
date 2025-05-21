@@ -144,3 +144,38 @@ For information on the packaged dependencies of the Zero Downtime Migration (ZDM
 
 For frequently asked questions, please refer to our separate [FAQ](https://docs.datastax.com/en/astra-serverless/docs/migrate/faqs.html) page.
 
+## Metrics
+
+The proxy supports multiple metrics backends:
+
+### Prometheus (default)
+Prometheus metrics are exposed on the configured metrics port (default: 14001) at the `/metrics` endpoint.
+
+Configuration:
+```yaml
+metrics_enabled: true
+metrics_type: prometheus  # optional, defaults to prometheus
+metrics_address: localhost
+metrics_port: 14001
+metrics_prefix: zdm
+```
+
+### Amazon CloudWatch
+Metrics can be sent directly to Amazon CloudWatch. This requires Amazon credentials to be configured (via environment variables, IAM roles, etc.). For more details see [AWS best practices for zdm proxy](aws)
+
+Configuration:
+```yaml
+metrics_enabled: true
+metrics_type: amazoncloudwatch
+metrics_prefix: zdm
+amazon_cloudwatch_region: us-west-2  # optional, defaults to environment
+amazon_cloudwatch_namespace: ZDMProxy  # optional, defaults to ZDMProxy
+amazon_cloudwatch_report_interval_minutes: 1 #option report metrics ever 1 minute
+```
+
+### No-op
+Metrics can be disabled entirely:
+```yaml
+metrics_enabled: false
+```
+
